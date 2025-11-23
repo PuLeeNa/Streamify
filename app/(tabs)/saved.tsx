@@ -13,11 +13,13 @@ import { getSavedMovies, removeSavedMovie } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Saved = () => {
   const router = useRouter();
   const isFirstRender = useRef(true);
   const { isDark } = useTheme();
+  const { user } = useAuth();
   const {
     data: savedMovies,
     loading,
@@ -52,15 +54,46 @@ const Saved = () => {
         style={{ opacity: isDark ? 1 : 0.05 }}
       />
 
-      <View className="w-full flex-row justify-center mt-20 items-center mb-5 px-5">
-        <Image source={icons.logo} className="w-12 h-10" />
-        <Text
-          className={`text-2xl font-bold ml-3 ${
-            isDark ? "text-white" : "text-black"
-          }`}
-        >
-          Saved Movies
-        </Text>
+      <View className="w-full flex-row justify-between items-center mt-20 mb-5 px-5">
+        <View className="flex-row items-center flex-1">
+          <Image source={icons.logo} className="w-12 h-10" />
+          <Text
+            className={`text-2xl font-bold ml-3 ${
+              isDark ? "text-white" : "text-black"
+            }`}
+          >
+            Saved Movies
+          </Text>
+        </View>
+        {user && (
+          <TouchableOpacity
+            className="flex-row items-center"
+            onPress={() => router.push("/profile")}
+            activeOpacity={0.7}
+          >
+            <View
+              className={`w-8 h-8 rounded-full items-center justify-center mr-2 ${
+                isDark ? "bg-accent/20" : "bg-blue-100"
+              }`}
+            >
+              <Text
+                className={`text-sm font-bold ${
+                  isDark ? "text-accent" : "text-blue-500"
+                }`}
+              >
+                {user.username.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+            <Text
+              className={`text-sm font-semibold ${
+                isDark ? "text-white" : "text-black"
+              }`}
+              numberOfLines={1}
+            >
+              {user.name || user.username}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {loading ? (

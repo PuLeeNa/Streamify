@@ -8,6 +8,7 @@ import { getTrendingMovies } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Text,
   View,
@@ -15,11 +16,13 @@ import {
   ScrollView,
   ActivityIndicator,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
 
 export default function Index() {
   const router = useRouter();
   const { isDark } = useTheme();
+  const { user } = useAuth();
 
   const {
     data: trendingMovies,
@@ -49,7 +52,41 @@ export default function Index() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ minHeight: "100%", paddingBottom: 10 }}
       >
-        <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
+        <View className="flex-row justify-between items-center mt-20 mb-5">
+          <View className="flex-1" />
+          <Image source={icons.logo} className="w-12 h-10" />
+          <View className="flex-1 items-end">
+            {user && (
+              <TouchableOpacity
+                className="flex-row items-center"
+                onPress={() => router.push("/profile")}
+                activeOpacity={0.7}
+              >
+                <View
+                  className={`w-8 h-8 rounded-full items-center justify-center mr-2 ${
+                    isDark ? "bg-accent/20" : "bg-blue-100"
+                  }`}
+                >
+                  <Text
+                    className={`text-sm font-bold ${
+                      isDark ? "text-accent" : "text-blue-500"
+                    }`}
+                  >
+                    {user.username.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <Text
+                  className={`text-sm font-semibold ${
+                    isDark ? "text-white" : "text-black"
+                  }`}
+                  numberOfLines={1}
+                >
+                  {user.name || user.username}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
         {moviesLoading || trendingLoading ? (
           <ActivityIndicator
             size="large"
