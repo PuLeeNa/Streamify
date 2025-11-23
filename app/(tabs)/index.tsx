@@ -22,7 +22,7 @@ export default function Index() {
   const {
     data: trendingMovies,
     loading: trendingLoading,
-    error: trendingError
+    error: trendingError,
   } = useFetch(getTrendingMovies);
 
   const {
@@ -56,23 +56,26 @@ export default function Index() {
           <View className="flex-1 mt-5">
             <SearchBar
               onPress={() => router.push("/search")}
-              placeholder="Search movies ..." 
+              placeholder="Search movies ..."
             />
             {trendingMovies && (
               <View className="mt-10">
-                <Text className="text-lg text-white font-bold mb-3">Trending Movies</Text>
+                <Text className="text-lg text-white font-bold mb-3">
+                  Trending Movies
+                </Text>
               </View>
             )}
             <>
-
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 ItemSeparatorComponent={() => <View className="w-4" />}
                 className="mb-4 mt-3"
                 data={trendingMovies}
-                renderItem={({ item, index }) => <TrendingCard movie={item} index={index} />}
-                keyExtractor={(item) => item.movie_id.toString()}
+                renderItem={({ item, index }) => (
+                  <TrendingCard movie={item} index={index} />
+                )}
+                keyExtractor={(item) => item.$id}
               />
 
               <Text className="text-white text-lg font-bold mt-5 mb-3">
