@@ -48,12 +48,23 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
 export const getTrendingMovies = async (): Promise<TrendingMovie[] | undefined> => {
     try {
         const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
-            Query.limit(5),
+            Query.limit(100),
             Query.orderDesc('count'),
         ]);
-        return result.documents as unknown as TrendingMovie[];
+
+        // Filter to get unique movies (keep only the highest ranked one per movie_id)
+        const seenMovieIds = new Set<number>();
+        const uniqueMovies = (result.documents as unknown as TrendingMovie[]).filter(movie => {
+            if (seenMovieIds.has(movie.movie_id)) {
+                return false;
+            }
+            seenMovieIds.add(movie.movie_id);
+            return true;
+        });
+
+        return uniqueMovies.slice(0, 5);
     } catch (error) {
         console.error('Error fetching trending movies:', error);
-        return undefined;   
+        return undefined;
     }
 }
