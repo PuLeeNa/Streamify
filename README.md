@@ -288,10 +288,5 @@ This project is created for educational purposes.
 - [Expo](https://expo.dev/) for the development framework
 - [NativeWind](https://www.nativewind.dev/) for styling
 
-## 📧 Contact
-
-For questions or support, please contact the development team.
-
 ---
 
-Made with ❤️ for Mobile Applications Development - L3S1
