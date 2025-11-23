@@ -1,6 +1,6 @@
 # 🎬 Streamify - Movie Discovery App
 
-A feature-rich React Native mobile application built with Expo that allows users to discover, search, and save their favorite movies using The Movie Database (TMDB) API.
+A feature-rich React Native mobile application built with Expo that allows users to discover, search, and save their favorite movies using The Movie Database (TMDB) API and Appwrite as a BaaS.
 
 ## 📱 Features
 
