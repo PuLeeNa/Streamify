@@ -35,13 +35,20 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import { useLocalSearchParams, useRouter, Link } from "expo-router";
+import {
+  useLocalSearchParams,
+  useRouter,
+  Link,
+  useFocusEffect,
+} from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useState, useEffect, useCallback } from "react";
 
 import { icons } from "@/constants/icons";
 import useFetch from "@/services/useFetch";
 import { fetchMovieDetails, fetchSimilarMovies } from "@/services/api";
 import MovieCard from "@/components/MovieCard";
+import { saveMovie, removeSavedMovie, isMovieSaved } from "@/services/appwrite";
 
 interface MovieInfoProps {
   label: string;
@@ -60,6 +67,8 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 const Details = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
+  const [isSaved, setIsSaved] = useState(false);
+  const [savingInProgress, setSavingInProgress] = useState(false);
 
   const { data: movie, loading } = useFetch(() =>
     fetchMovieDetails(id as string)
@@ -68,6 +77,47 @@ const Details = () => {
   const { data: similarMovies, loading: similarLoading } = useFetch(() =>
     fetchSimilarMovies(id as string)
   );
+
+  const checkSavedStatus = async () => {
+    if (movie?.id) {
+      const saved = await isMovieSaved(movie.id);
+      setIsSaved(saved);
+    }
+  };
+
+  useEffect(() => {
+    checkSavedStatus();
+  }, [movie?.id]);
+
+  // Refresh saved status when screen comes back into focus
+  useFocusEffect(
+    useCallback(() => {
+      if (movie?.id) {
+        checkSavedStatus();
+      }
+    }, [movie?.id])
+  );
+
+  const handleToggleSave = async () => {
+    if (!movie || savingInProgress) return;
+
+    setSavingInProgress(true);
+    try {
+      if (isSaved) {
+        const success = await removeSavedMovie(movie.id);
+        if (success) {
+          setIsSaved(false);
+        }
+      } else {
+        const success = await saveMovie(movie);
+        if (success) {
+          setIsSaved(true);
+        }
+      }
+    } finally {
+      setSavingInProgress(false);
+    }
+  };
 
   if (loading)
     return (
@@ -88,13 +138,28 @@ const Details = () => {
             resizeMode="cover"
           />
 
-          <TouchableOpacity className="absolute bottom-5 right-5 rounded-full size-14 bg-white flex items-center justify-center">
-            <Image
-              source={icons.play}
-              className="w-6 h-7 ml-1"
-              resizeMode="stretch"
-            />
-          </TouchableOpacity>
+          <View className="absolute bottom-5 right-5 flex-row gap-x-3">
+            <TouchableOpacity
+              className="rounded-full size-14 bg-white flex items-center justify-center"
+              onPress={handleToggleSave}
+              disabled={savingInProgress}
+            >
+              <Image
+                source={icons.save}
+                className="w-6 h-6"
+                tintColor={isSaved ? "#FF6B6B" : "#000000"}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity className="rounded-full size-14 bg-white flex items-center justify-center">
+              <Image
+                source={icons.play}
+                className="w-6 h-7 ml-1"
+                resizeMode="stretch"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View className="bg-primary px-5">
