@@ -7,6 +7,12 @@ import star from "@/assets/icons/star.png";
 import play from "@/assets/icons/play.png";
 import arrow from "@/assets/icons/arrow.png";
 
+// Use person icon as fallback for lock, eye, eyeHide, and email
+const lock = person;
+const eye = person;
+const eyeHide = person;
+const email = person;
+
 export const icons = {
   home,
   search,
@@ -16,4 +22,8 @@ export const icons = {
   star,
   play,
   arrow,
+  lock,
+  eye,
+  eyeHide,
+  email,
 };

@@ -1,11 +1,22 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Alert,
+} from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "expo-router";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 
 const Profile = () => {
   const { theme, themeMode, setThemeMode, isDark } = useTheme();
+  const { user, logout, isAuthenticated } = useAuth();
+  const router = useRouter();
 
   const themeOptions = [
     { label: "Light", value: "light" as const },
@@ -30,9 +41,50 @@ const Profile = () => {
               isDark ? "text-white" : "text-black"
             }`}
           >
-            Settings
+            Profile
           </Text>
         </View>
+
+        {/* User Info Section */}
+        {isAuthenticated && user && (
+          <View
+            className={`p-5 rounded-xl mb-4 ${
+              isDark ? "bg-dark-100/50" : "bg-gray-100"
+            }`}
+          >
+            <View className="flex-row items-center mb-3">
+              <View
+                className={`w-16 h-16 rounded-full items-center justify-center ${
+                  isDark ? "bg-accent/20" : "bg-blue-100"
+                }`}
+              >
+                <Text
+                  className={`text-2xl font-bold ${
+                    isDark ? "text-accent" : "text-blue-500"
+                  }`}
+                >
+                  {user.username.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+              <View className="ml-4 flex-1">
+                <Text
+                  className={`text-xl font-bold ${
+                    isDark ? "text-white" : "text-black"
+                  }`}
+                >
+                  {user.name || user.username}
+                </Text>
+                <Text
+                  className={`text-sm ${
+                    isDark ? "text-light-300" : "text-gray-600"
+                  }`}
+                >
+                  @{user.username}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* Theme Section */}
         <View
@@ -98,6 +150,33 @@ const Profile = () => {
               : `Currently using ${theme} mode`}
           </Text>
         </View>
+
+        {/* Logout Button */}
+        {isAuthenticated && (
+          <TouchableOpacity
+            className={`py-4 rounded-xl items-center mb-4 ${
+              isDark ? "bg-red-600" : "bg-red-500"
+            }`}
+            onPress={() => {
+              Alert.alert("Logout", "Are you sure you want to logout?", [
+                {
+                  text: "Cancel",
+                  style: "cancel",
+                },
+                {
+                  text: "Logout",
+                  style: "destructive",
+                  onPress: async () => {
+                    await logout();
+                    router.replace("/login");
+                  },
+                },
+              ]);
+            }}
+          >
+            <Text className="text-white font-bold text-base">Logout</Text>
+          </TouchableOpacity>
+        )}
 
         {/* App Info */}
         <View
