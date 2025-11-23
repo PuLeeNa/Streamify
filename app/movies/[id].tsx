@@ -49,26 +49,41 @@ import useFetch from "@/services/useFetch";
 import { fetchMovieDetails, fetchSimilarMovies } from "@/services/api";
 import MovieCard from "@/components/MovieCard";
 import { saveMovie, removeSavedMovie, isMovieSaved } from "@/services/appwrite";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface MovieInfoProps {
   label: string;
   value?: string | number | null;
 }
 
-const MovieInfo = ({ label, value }: MovieInfoProps) => (
-  <View className="flex-col items-start justify-center mt-5">
-    <Text className="text-light-200 font-normal text-sm">{label}</Text>
-    <Text className="text-light-100 font-bold text-sm mt-2">
-      {value || "N/A"}
-    </Text>
-  </View>
-);
+const MovieInfo = ({ label, value }: MovieInfoProps) => {
+  const { isDark } = useTheme();
+  return (
+    <View className="flex-col items-start justify-center mt-5">
+      <Text
+        className={`font-normal text-sm ${
+          isDark ? "text-light-200" : "text-gray-600"
+        }`}
+      >
+        {label}
+      </Text>
+      <Text
+        className={`font-bold text-sm mt-2 ${
+          isDark ? "text-light-100" : "text-black"
+        }`}
+      >
+        {value || "N/A"}
+      </Text>
+    </View>
+  );
+};
 
 const Details = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const [isSaved, setIsSaved] = useState(false);
   const [savingInProgress, setSavingInProgress] = useState(false);
+  const { isDark } = useTheme();
 
   const { data: movie, loading } = useFetch(() =>
     fetchMovieDetails(id as string)
@@ -121,13 +136,13 @@ const Details = () => {
 
   if (loading)
     return (
-      <SafeAreaView className="bg-primary flex-1">
+      <SafeAreaView className={`flex-1 ${isDark ? "bg-primary" : "bg-white"}`}>
         <ActivityIndicator />
       </SafeAreaView>
     );
 
   return (
-    <View className="bg-primary flex-1">
+    <View className={`flex-1 ${isDark ? "bg-primary" : "bg-white"}`}>
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View className="relative w-full h-[550px] mb-5">
           <Image
@@ -162,23 +177,51 @@ const Details = () => {
           </View>
         </View>
 
-        <View className="bg-primary px-5">
-          <Text className="text-white font-bold text-xl">{movie?.title}</Text>
+        <View className={`px-5 ${isDark ? "bg-primary" : "bg-white"}`}>
+          <Text
+            className={`font-bold text-xl ${
+              isDark ? "text-white" : "text-black"
+            }`}
+          >
+            {movie?.title}
+          </Text>
           <View className="flex-row items-center gap-x-1 mt-2">
-            <Text className="text-light-200 text-sm">
+            <Text
+              className={`text-sm ${
+                isDark ? "text-light-200" : "text-gray-600"
+              }`}
+            >
               {movie?.release_date?.split("-")[0]} •
             </Text>
-            <Text className="text-light-200 text-sm">{movie?.runtime}m</Text>
+            <Text
+              className={`text-sm ${
+                isDark ? "text-light-200" : "text-gray-600"
+              }`}
+            >
+              {movie?.runtime}m
+            </Text>
           </View>
 
-          <View className="flex-row items-center bg-dark-100 px-2 py-1 rounded-md gap-x-1 mt-2">
+          <View
+            className={`flex-row items-center px-2 py-1 rounded-md gap-x-1 mt-2 ${
+              isDark ? "bg-dark-100" : "bg-gray-200"
+            }`}
+          >
             <Image source={icons.star} className="size-4" />
 
-            <Text className="text-white font-bold text-sm">
+            <Text
+              className={`font-bold text-sm ${
+                isDark ? "text-white" : "text-black"
+              }`}
+            >
               {Math.round(movie?.vote_average ?? 0)}/10
             </Text>
 
-            <Text className="text-light-200 text-sm">
+            <Text
+              className={`text-sm ${
+                isDark ? "text-light-200" : "text-gray-600"
+              }`}
+            >
               ({movie?.vote_count} votes)
             </Text>
           </View>
@@ -212,7 +255,11 @@ const Details = () => {
 
           {similarMovies && similarMovies.length > 0 && (
             <View className="mt-8 mb-5">
-              <Text className="text-white text-lg font-bold mb-3">
+              <Text
+                className={`text-lg font-bold mb-3 ${
+                  isDark ? "text-white" : "text-black"
+                }`}
+              >
                 Related Movies
               </Text>
               <FlatList
@@ -232,18 +279,28 @@ const Details = () => {
                         resizeMode="cover"
                       />
                       <Text
-                        className="text-white text-sm font-bold mt-2 w-32"
+                        className={`text-sm font-bold mt-2 w-32 ${
+                          isDark ? "text-white" : "text-black"
+                        }`}
                         numberOfLines={2}
                       >
                         {item.title}
                       </Text>
                       <View className="flex-row justify-start items-center gap-x-1">
                         <Image source={icons.star} className="size-4" />
-                        <Text className="text-xs text-white font-bold uppercase">
+                        <Text
+                          className={`text-xs font-bold uppercase ${
+                            isDark ? "text-white" : "text-black"
+                          }`}
+                        >
                           {Math.round(item.vote_average / 2)}
                         </Text>
                       </View>
-                      <Text className="text-xs text-light-300 font-medium mt-1">
+                      <Text
+                        className={`text-xs font-medium mt-1 ${
+                          isDark ? "text-light-300" : "text-gray-600"
+                        }`}
+                      >
                         {item.release_date?.split("-")[0]}
                       </Text>
                     </TouchableOpacity>

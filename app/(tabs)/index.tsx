@@ -7,6 +7,7 @@ import { fetchMovies } from "@/services/api";
 import { getTrendingMovies } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   Text,
   View,
@@ -18,6 +19,7 @@ import {
 
 export default function Index() {
   const router = useRouter();
+  const { isDark } = useTheme();
 
   const {
     data: trendingMovies,
@@ -36,8 +38,12 @@ export default function Index() {
   );
 
   return (
-    <View className="flex-1 bg-primary">
-      <Image source={images.bg} className="absolute w-full z-0" />
+    <View className={`flex-1 ${isDark ? "bg-primary" : "bg-white"}`}>
+      <Image
+        source={images.bg}
+        className="absolute w-full z-0"
+        style={{ opacity: isDark ? 1 : 0.05 }}
+      />
       <ScrollView
         className="flex-1 px-5"
         showsVerticalScrollIndicator={false}
@@ -51,7 +57,9 @@ export default function Index() {
             className="mt-10 self-center"
           />
         ) : moviesError || trendingError ? (
-          <Text>Error: {moviesError?.message || trendingError?.message}</Text>
+          <Text className={isDark ? "text-red-500" : "text-red-600"}>
+            Error: {moviesError?.message || trendingError?.message}
+          </Text>
         ) : (
           <View className="flex-1 mt-5">
             <SearchBar
@@ -60,7 +68,11 @@ export default function Index() {
             />
             {trendingMovies && (
               <View className="mt-10">
-                <Text className="text-lg text-white font-bold mb-3">
+                <Text
+                  className={`text-lg font-bold mb-3 ${
+                    isDark ? "text-white" : "text-black"
+                  }`}
+                >
                   Trending Movies
                 </Text>
               </View>
@@ -78,7 +90,11 @@ export default function Index() {
                 keyExtractor={(item) => item.$id}
               />
 
-              <Text className="text-white text-lg font-bold mt-5 mb-3">
+              <Text
+                className={`text-lg font-bold mt-5 mb-3 ${
+                  isDark ? "text-white" : "text-black"
+                }`}
+              >
                 Latest Movies
               </Text>
 

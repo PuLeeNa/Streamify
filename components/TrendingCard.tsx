@@ -3,11 +3,15 @@ import { Image, View, Text, Pressable } from "react-native";
 import React from "react";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { images } from "@/constants/images";
+import { useTheme } from "@/contexts/ThemeContext";
+
 
 const TrendingCard = ({
   movie: { movie_id, title, poster_url },
   index,
 }: TrendingCardProps) => {
+  const { isDark } = useTheme();
+
   return (
     <Link href={`/movies/${movie_id}`} asChild>
       <Pressable>
@@ -20,7 +24,7 @@ const TrendingCard = ({
         <View className="absolute bottom-9 -left-3.5 px-2 py-1 rounded-full">
           <MaskedView
             maskElement={
-              <Text className="font-bold text-white text-6xl">{index + 1}</Text>
+              <Text className={`font-bold text-6xl ${isDark ? 'text-white' : 'text-black'}`}>{index + 1}</Text>
             }
           >
             <Image
@@ -32,7 +36,7 @@ const TrendingCard = ({
         </View>
 
         <Text
-          className="text-sm font-bold mt-2 text-light-200 w-32"
+          className={`text-sm font-bold mt-2 ${isDark ? 'text-light-200' : 'text-gray-600'} w-32`}
           numberOfLines={2}
           ellipsizeMode="tail"
         >

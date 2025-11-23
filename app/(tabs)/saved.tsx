@@ -12,10 +12,12 @@ import { images } from "@/constants/images";
 import { getSavedMovies, removeSavedMovie } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter, useFocusEffect } from "expo-router";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Saved = () => {
   const router = useRouter();
   const isFirstRender = useRef(true);
+  const { isDark } = useTheme();
   const {
     data: savedMovies,
     loading,
@@ -42,16 +44,23 @@ const Saved = () => {
   };
 
   return (
-    <View className="flex-1 bg-primary">
+    <View className={`flex-1 ${isDark ? "bg-primary" : "bg-white"}`}>
       <Image
         source={images.bg}
         className="flex-1 absolute w-full z-0"
         resizeMode="cover"
+        style={{ opacity: isDark ? 1 : 0.05 }}
       />
 
       <View className="w-full flex-row justify-center mt-20 items-center mb-5 px-5">
         <Image source={icons.logo} className="w-12 h-10" />
-        <Text className="text-white text-2xl font-bold ml-3">Saved Movies</Text>
+        <Text
+          className={`text-2xl font-bold ml-3 ${
+            isDark ? "text-white" : "text-black"
+          }`}
+        >
+          Saved Movies
+        </Text>
       </View>
 
       {loading ? (
@@ -62,10 +71,18 @@ const Saved = () => {
         </Text>
       ) : !savedMovies || savedMovies.length === 0 ? (
         <View className="flex-1 justify-center items-center px-5">
-          <Text className="text-gray-500 text-center text-lg">
+          <Text
+            className={`text-center text-lg ${
+              isDark ? "text-gray-500" : "text-gray-600"
+            }`}
+          >
             No saved movies yet
           </Text>
-          <Text className="text-gray-400 text-center mt-2">
+          <Text
+            className={`text-center mt-2 ${
+              isDark ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
             Start adding movies to your collection!
           </Text>
         </View>
@@ -74,7 +91,9 @@ const Saved = () => {
           data={savedMovies}
           renderItem={({ item }) => (
             <TouchableOpacity
-              className="flex-row bg-dark-100/50 mx-5 mb-3 rounded-lg p-3"
+              className={`flex-row mx-5 mb-3 rounded-lg p-3 ${
+                isDark ? "bg-dark-100/50" : "bg-gray-100"
+              }`}
               onPress={() => router.push(`/movies/${item.movie_id}`)}
             >
               <Image
@@ -89,22 +108,34 @@ const Saved = () => {
               <View className="flex-1 ml-3 justify-between">
                 <View>
                   <Text
-                    className="text-white font-bold text-base"
+                    className={`font-bold text-base ${
+                      isDark ? "text-white" : "text-black"
+                    }`}
                     numberOfLines={2}
                   >
                     {item.title}
                   </Text>
                   <View className="flex-row items-center mt-1">
                     <Image source={icons.star} className="size-3" />
-                    <Text className="text-white text-xs ml-1">
+                    <Text
+                      className={`text-xs ml-1 ${
+                        isDark ? "text-white" : "text-black"
+                      }`}
+                    >
                       {Math.round(item.vote_average / 2)}/5
                     </Text>
-                    <Text className="text-light-300 text-xs ml-2">
+                    <Text
+                      className={`text-xs ml-2 ${
+                        isDark ? "text-light-300" : "text-gray-600"
+                      }`}
+                    >
                       {item.release_date?.split("-")[0]}
                     </Text>
                   </View>
                   <Text
-                    className="text-light-300 text-xs mt-2"
+                    className={`text-xs mt-2 ${
+                      isDark ? "text-light-300" : "text-gray-600"
+                    }`}
                     numberOfLines={2}
                   >
                     {item.overview}
